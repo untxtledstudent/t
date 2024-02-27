@@ -14,22 +14,7 @@ def TextureColor(path,new_width=100):
     new_height = aspect_ratio * new_width
     img = img.resize((new_width, int(new_height)))
 
-    pixel_color = np.asarray(img)
-    tri_texture = [[],[]]
-
-    for y,row in enumerate(pixel_color):
-        tri_texture[0].append([])
-        tri_texture[1].append([])
-        for x,pixel in enumerate(row):
-            if x+y >= y*2:
-                tri_texture[1][y].append(pixel)
-            else:
-                tri_texture[0][y].append(pixel)
-
-    #pic = PIL.Image.fromarray(np.array([tri_texture[0]]))
-    #pic.save('E.png')
-    return tri_texture[0]
-    #return np.asarray(img)
+    return np.asarray(img)
 
 Textures = {}
 for file in os.listdir('Textures/'):
@@ -69,20 +54,17 @@ def Display(image_text):
         return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
     for row in image_text:
         for x in row:
-            print(get_color_escape(*x[:-1])+"@"+RESET,end='')
+            #print(x[:-1])
+            print(get_color_escape(*x[:-1])+"@"+RESET,end=' ')
         print()
 
-# class Texture:
-#     def __init__(self,path,scale=1):
-#         self.origin = Read(path)
-#         self.data = self.origin.copy()
-#         self.Scale(scale)
+class Texture:
+    def __init__(self,path,scale=1):
+        self.image = PIL.Image.open('Textures/'+path)
 
-#     def Scale(self,scale):
-#         new = []
-#         for row in range(0,len(self.origin),int(scale)):
-#             new.append([])
-#             for pixel in range(0,len(self.origin[row]),int(scale)):
-#                print(*list(zip([self.data[y+row][x+pixel] for x in range(scale) for y in range(scale)])))
-#                new[row].append([sum([a,b,c])/int(scale) for a,b,c in list(zip([self.data[y+row][x+pixel] for x in range(scale) for y in range(scale)]))[0]])
-#         self.data
+    def get_array(self):
+        if self.image:
+            return np.asarray(self.image)
+        
+    def Scale(self,scale):
+        self.image.resize([scale*size for size in self.image.size])
